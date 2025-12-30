@@ -1,23 +1,30 @@
 fn chunkify(m: &str) -> Vec<[u32; 16]> {
     let m_bit_cnt = m.len() as u64 * 8;
     m.as_bytes()
-    .chunks(56)
+    .iter() 
+    .chain( Some(1<<7).iter() )
+    .chain( {
+        let chunk_n_len = (m.len() + 1) % 64;
+        if chunk_n_len > 56 {
+            std::iter::repeat_n( 0, 120 - chunk_n_len )
+        } else { std::iter::repeat_n( 0, 56 - chunk_n_len ) }
+    } )
+    .chain(
+        (m.len() as u64 * 8)
+            .to_be_bytes()
+            .into_iter()
+    )
+    .chunks(64)
     .map( |chunk| {
         let mut msgspace: Vec<u8> = Vec::from(chunk);
-        for pad in 0..56-chunk.len() { match pad {
-            0 => msgspace.push(128u8),
-            _ => msgspace.push(0u8)
-        } }
-        std::array::from_fn( |i| {
-            if i < 14 { 
-                return u32::from_be_bytes( msgspace[i*4..(i+1)*4]
-                    .try_into()
-                    .unwrap() )
-            }
-            if i == 14 { return (m_bit_cnt >> 32) as u32 }
-            m_bit_cnt as u32
-        } )
-    } ).collect()
+        std::array::from_fn( |i| u32::from_be_bytes(
+            msgspace[i*4..(i+1)*4]
+                .try_into()
+                .unwrap()
+            )
+        )
+    } )
+    .collect()
 } 
 
 fn collapse(m: Vec<[u32; 16]>) -> [u32; 5] {
@@ -103,6 +110,12 @@ mod tests {
     #[test]
     fn empty() {
         assert_eq!( trusted_sha1(""), hash("") );
+    }
+
+    #[test]
+    fn lorem() {
+        const LOREM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pellentesque volutpat ex, et dictum orci finibus eget. Suspendisse felis nisi, maximus ut vulputate ut, condimentum vitae nulla. Praesent in venenatis est. Sed augue nibh, rhoncus hendrerit elit non, sodales suscipit eros. Pellentesque et est tellus. Aenean suscipit molestie blandit. Nullam luctus blandit lectus. Vivamus placerat libero at porttitor mollis. Sed convallis purus ligula, id scelerisque turpis congue sit amet.";
+        assert_eq!( trusted_sha1(LOREM), hash(LOREM) );
     }
 
     #[test]

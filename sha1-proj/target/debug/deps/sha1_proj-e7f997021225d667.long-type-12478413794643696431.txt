@@ -1,0 +1,1 @@
+std::iter::Chain<Map<Chunks<'_, u8>, {closure@src/lib.rs:5:11: 5:18}>, std::option::IntoIter<Vec<[u32; 16]>>>

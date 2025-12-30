@@ -1,0 +1,1 @@
+std::iter::Chain<Map<Chunks<'_, u8>, {closure@src/lib.rs:5:11: 5:18}>, Flatten<std::option::IntoIter<[u32; 16]>>>

@@ -1,0 +1,1 @@
+std::iter::Chain<Map<Chunks<'_, u8>, {closure@src/lib.rs:5:11: 5:18}>, OnceWith<{closure@src/lib.rs:27:31: 27:33}>>

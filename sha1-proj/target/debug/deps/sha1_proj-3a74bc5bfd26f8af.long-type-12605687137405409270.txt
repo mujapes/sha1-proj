@@ -1,0 +1,1 @@
+std::iter::Chain<Chunks<'_, u8>, std::option::IntoIter<Vec<[u32; 16]>>>

@@ -1,0 +1,1 @@
+<Option<Vec<[u32; 16]>> as IntoIterator>::Item == [u32; _]
